@@ -16,6 +16,7 @@ if st.button("Submit"):
     response = supabase.auth.sign_up(
         {"email": email, "password": password}
     )
+    st.write(response)
 
-st.write(response)
+
 
