@@ -17,3 +17,5 @@ if st.button("Submit"):
         {"email": email, "password": password}
     )
 
+st.write(response)
+
