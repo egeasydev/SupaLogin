@@ -23,11 +23,13 @@ def generate_auth_url():
 st.title("Google 로그인 예제")
 
 # 로그인 상태 확인
-user = supabase.auth.user()
-if user:
-    st.write("로그인 상태입니다.")
-    st.write(f"사용자 정보: {user.email}")
-else:
-    # 로그인이 필요한 경우
-    auth_url = generate_auth_url()
-    st.markdown(f'로그인하려면 [여기를 클릭하세요]({auth_url})', unsafe_allow_html=True)
+session = supabase.auth.session()
+    if session:
+        user = session['user']
+        if user:
+            st.write("로그인 상태입니다.")
+            st.write(f"사용자 정보: {user['email']}")
+        else:
+            st.write("로그인 상태가 아닙니다.")
+    else:
+        st.write("로그인 상태가 아닙니다.")
