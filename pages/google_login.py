@@ -40,7 +40,6 @@ else:
     # 로그인 버튼 표시
     login_url = generate_login_url()
     st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
-    if st.button("Google로 로그인"):
-        st.experimental_set_query_params(redirect="https://supaenter.streamlit.app/pages/google_login.py")
+    st.write(query_params)
 
 
