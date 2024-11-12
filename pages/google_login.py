@@ -10,6 +10,10 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
+if st.session_state.user_info not in st.session_state:
+    st.session_state.user_info = None
+
+st.write(st.session_state.user_info)
 
 def generate_login_url():
     params = {
@@ -22,7 +26,6 @@ def generate_login_url():
 
 
 st.title("Google 로그인 예제")
-st.write(user_info)
 query_params = st.experimental_get_query_params()
 
     # 세션 상태 확인
