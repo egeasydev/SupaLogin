@@ -2,6 +2,7 @@ import os
 import streamlit as st
 from supabase import create_client, Client
 from dotenv import find_dotenv, load_dotenv
+from urllib.parse import urlencode
 
 load_dotenv(find_dotenv(), override=True)
 
@@ -10,32 +11,69 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 
+# def generate_login_url():
+#     redirect_uri = st.experimental_get_query_params().get('redirect_uri', [''])[0]
+#     if not redirect_uri:
+#         redirect_uri = "https://supaenter.streamlit.app/google_login"
+#     return f"{url}/auth/v1/authorize?provider=google&redirect_to={redirect_uri}"
+#
+#
+# st.title("Google 로그인 예제")
+#
+# # 로그인 상태 확인
+# st.title("Google 로그인 예제")
+#
+#     # 세션 상태 확인
+# if 'access_token' not in st.session_state:
+#     st.session_state['access_token'] = None
+#
+# # 로그인 상태 확인
+# if st.session_state['access_token']:
+#     # 액세스 토큰을 사용하여 사용자 정보 가져오기
+#     user_info = supabase.auth.get_user(st.session_state['access_token'])
+#     if user_info:
+#         st.write("로그인 상태입니다.")
+#         st.write(f"사용자 정보: {user_info.user.email}")
+#     else:
+#         st.write("사용자 정보를 가져오지 못했습니다.")
+# else:
+#     # 로그인 버튼 표시
+#     login_url = generate_login_url()
+#     st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
+
 def generate_login_url():
-    redirect_uri = st.experimental_get_query_params().get('redirect_uri', [''])[0]
-    if not redirect_uri:
-        redirect_uri = "https://supaenter.streamlit.app/google_login"
-    return f"{url}/auth/v1/authorize?provider=google&redirect_to={redirect_uri}"
+    # Supabase의 Google 로그인 URL 생성
+    redirect_uri = "https://supaenter.streamlit.app/google_login"
+    params = {
+        "provider": "google",
+        "redirect_to": redirect_uri
+    }
+    query_string = urlencode(params)
+    return f"{url}/auth/v1/authorize?{query_string}"
 
 
 st.title("Google 로그인 예제")
 
-# 로그인 상태 확인
-st.title("Google 로그인 예제")
+    # 현재 쿼리 매개변수 가져오기
+query_params = st.experimental_get_query_params()
 
-    # 세션 상태 확인
-if 'access_token' not in st.session_state:
-    st.session_state['access_token'] = None
-
-# 로그인 상태 확인
-if st.session_state['access_token']:
-    # 액세스 토큰을 사용하여 사용자 정보 가져오기
-    user_info = supabase.auth.get_user(st.session_state['access_token'])
-    if user_info:
-        st.write("로그인 상태입니다.")
-        st.write(f"사용자 정보: {user_info.user.email}")
-    else:
-        st.write("사용자 정보를 가져오지 못했습니다.")
+    # 쿼리 매개변수에서 'redirect' 값 확인
+if 'redirect' in query_params:
+    # 사용자가 로그인 후 돌아왔을 때 처리
+    st.session_state['access_token'] = query_params['access_token'][0] if 'access_token' in query_params else None
+    if st.session_state['access_token']:
+        user_info = supabase.auth.get_user(st.session_state['access_token'])
+        if user_info:
+            st.write("로그인 상태입니다.")
+            st.write(f"사용자 정보: {user_info.user.email}")
+        else:
+            st.write("사용자 정보를 가져오지 못했습니다.")
 else:
-    # 로그인 버튼 표시
+    # 로그인 상태가 아니라면 로그인 URL 생성
     login_url = generate_login_url()
-    st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
+
+    # 로그인 버튼 클릭 시 리디렉션 처리
+    if st.button("Google로 로그인"):
+        st.experimental_set_query_params(redirect=login_url)
+        st.rerun()
+
