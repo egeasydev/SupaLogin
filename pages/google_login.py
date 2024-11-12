@@ -24,12 +24,12 @@ st.title("Google 로그인 예제")
 
 # 로그인 상태 확인
 session = supabase.auth.session()
-    if session:
-        user = session['user']
-        if user:
-            st.write("로그인 상태입니다.")
-            st.write(f"사용자 정보: {user['email']}")
-        else:
-            st.write("로그인 상태가 아닙니다.")
+if session:
+    user = session['user']
+    if user:
+        st.write("로그인 상태입니다.")
+        st.write(f"사용자 정보: {user['email']}")
     else:
         st.write("로그인 상태가 아닙니다.")
+else:
+    st.write("로그인 상태가 아닙니다.")
