@@ -35,3 +35,5 @@ else:
     login_url = generate_login_url()
     st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
 
+st.write(st.session_state.access_token)
+
