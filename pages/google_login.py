@@ -12,34 +12,26 @@ supabase: Client = create_client(url, key)
 
 
 def generate_login_url():
-    params = {
-        "provider": "google",
-        "redirect_to": "https://fnucjhunzytgevnujnxs.supabase.co"
-    }
-    query_string = urlencode(params)
-    return f"{url}/auth/v1/authorize?{query_string}"
-
-
+    # Supabase의 Google 로그인 URL 생성
+    return f"{url}/auth/v1/authorize?provider=google&redirect_to=https://supaenter.streamlit.app/google_login"
 
 st.title("Google 로그인 예제")
-query_params = st.experimental_get_query_params()
 
     # 세션 상태 확인
-if 'access_token' in query_params:
-    access_token = query_params['access_token'][0]
-    user_info = supabase.auth.get_user(access_token)
-    st.session_state.user_info = user_info
-    st.write(user_info)
+if 'access_token' not in st.session_state:
+    st.session_state['access_token'] = None
 
+# 로그인 상태 확인
+if st.session_state['access_token']:
+# 액세스 토큰을 사용하여 사용자 정보 가져오기
+    user_info = supabase.auth.get_user(st.session_state['access_token'])
     if user_info:
-                st.write("로그인 상태입니다.")
-                st.write(f"사용자 정보: {user_info.user.email}")
+        st.write("로그인 상태입니다.")
+        st.write(f"사용자 정보: {user_info.user.email}")
     else:
         st.write("사용자 정보를 가져오지 못했습니다.")
 else:
-    # 로그인 버튼 표시
+# 로그인 버튼 표시
     login_url = generate_login_url()
     st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
-    st.write(query_params)
-
 
