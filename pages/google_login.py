@@ -11,11 +11,6 @@ key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
 
-if "user_info" not in st.session_state:
-    st.session_state.user_info = None
-
-st.write(st.session_state.user_info)
-
 def generate_login_url():
     params = {
         "provider": "google",
