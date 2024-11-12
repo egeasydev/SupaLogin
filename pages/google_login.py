@@ -3,12 +3,43 @@ import streamlit as st
 from supabase import create_client, Client
 from dotenv import find_dotenv, load_dotenv
 from urllib.parse import urlencode
+import re
 
 load_dotenv(find_dotenv(), override=True)
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
+
+
+def extract_access_token_from_url():
+    # JavaScript로 URL의 해시(#) 부분에서 access_token 추출
+    st.markdown("""
+        <script>
+        function getAccessToken() {
+            const url = window.location.href;
+            const tokenMatch = url.match(/access_token=([^&]+)/);
+            if (tokenMatch) {
+                const accessToken = tokenMatch[1];
+                // Streamlit에 전달
+                window.parent.postMessage({isStreamlitToken: true, accessToken: accessToken}, "*");
+            }
+        }
+        getAccessToken();
+        </script>
+    """, unsafe_allow_html=True)
+
+# 메시지 리스너 설정
+st.write("""
+<script>
+    window.addEventListener("message", (event) => {
+        if (event.data.isStreamlitToken) {
+            const accessToken = event.data.accessToken;
+            Streamlit.setComponentValue(accessToken); // Streamlit의 세션에 저장
+        }
+    });
+</script>
+""", unsafe_allow_html=True)
 
 
 def generate_login_url():
