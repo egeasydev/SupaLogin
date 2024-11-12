@@ -10,6 +10,7 @@ url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")
 supabase: Client = create_client(url, key)
 
+
 if "user_info" not in st.session_state:
     st.session_state.user_info = None
 
@@ -33,6 +34,7 @@ if 'access_token' in query_params:
     access_token = query_params['access_token'][0]
     user_info = supabase.auth.get_user(access_token)
     st.session_state.user_info = user_info
+    st.write(user_info)
 
     if user_info:
                 st.write("로그인 상태입니다.")
