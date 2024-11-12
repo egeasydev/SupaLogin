@@ -74,6 +74,6 @@ else:
 
     # 로그인 버튼 클릭 시 리디렉션 처리
     if st.button("Google로 로그인"):
-        st.experimental_set_query_params(redirect=login_url)
+        st.query_params(redirect=login_url)
         st.rerun()
 
