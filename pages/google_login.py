@@ -12,10 +12,13 @@ supabase: Client = create_client(url, key)
 
 
 def generate_login_url():
-    redirect_uri = st.experimental_get_query_params().get('redirect_uri', [''])[0]
-    if not redirect_uri:
-        redirect_uri = "https://supaenter.streamlit.app/google_login"
-    return f"{url}/auth/v1/authorize?provider=google&redirect_to={redirect_uri}"
+    params = {
+        "provider": "google",
+        "redirect_to": "https://fnucjhunzytgevnujnxs.supabase.co"
+    }
+    query_string = urlencode(params)
+    return f"{url}/auth/v1/authorize?{query_string}"
+
 
 
 st.title("Google 로그인 예제")
