@@ -22,6 +22,7 @@ def generate_login_url():
 
 
 st.title("Google 로그인 예제")
+st.write(user_info)
 query_params = st.experimental_get_query_params()
 
     # 세션 상태 확인
@@ -39,6 +40,7 @@ else:
     login_url = generate_login_url()
     st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
     if st.button("Google로 로그인"):
-        st.experimental_set_query_params(redirect=login_url)
+        st.experimental_set_query_params(redirect="https://supaenter.streamlit.app")
         st.rerun()
+
 
