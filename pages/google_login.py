@@ -17,13 +17,16 @@ def generate_login_url():
 
 st.title("Google 로그인 예제")
 
+query_params = st.experimental_get_query_params()
+access_token = query_params.get('access_token', [None])[0]
+
+if access_token:
+    st.session_state.access_token = access_token
+
     # 세션 상태 확인
-if 'access_token' not in st.session_state:
+if 'access_token' in st.session_state and st.session_state['access_token']:
     st.session_state['access_token'] = None
 
-# 로그인 상태 확인
-if st.session_state['access_token']:
-# 액세스 토큰을 사용하여 사용자 정보 가져오기
     user_info = supabase.auth.get_user(st.session_state['access_token'])
     if user_info:
         st.write("로그인 상태입니다.")
@@ -35,5 +38,5 @@ else:
     login_url = generate_login_url()
     st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
 
-st.write(st.session_state.access_token)
+st.write(st.session_state.get('access_token', '토큰 없음'))
 
