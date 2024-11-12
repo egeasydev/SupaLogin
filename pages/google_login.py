@@ -58,22 +58,21 @@ st.title("Google 로그인 예제")
 query_params = st.experimental_get_query_params()
 
     # 쿼리 매개변수에서 'redirect' 값 확인
-if 'redirect' in query_params:
-    # 사용자가 로그인 후 돌아왔을 때 처리
-    st.session_state['access_token'] = query_params['access_token'][0] if 'access_token' in query_params else None
-    if st.session_state['access_token']:
-        user_info = supabase.auth.get_user(st.session_state['access_token'])
-        if user_info:
-            st.write("로그인 상태입니다.")
-            st.write(f"사용자 정보: {user_info.user.email}")
-        else:
-            st.write("사용자 정보를 가져오지 못했습니다.")
+if 'access_token' in query_params:
+        # 사용자가 로그인 후 돌아왔을 때 처리
+    access_token = query_params['access_token'][0]
+    user_info = supabase.auth.get_user(access_token)
+    if user_info:
+        st.write("로그인 상태입니다.")
+        st.write(f"사용자 정보: {user_info.user.email}")
+    else:
+        st.write("사용자 정보를 가져오지 못했습니다.")
 else:
     # 로그인 상태가 아니라면 로그인 URL 생성
     login_url = generate_login_url()
 
     # 로그인 버튼 클릭 시 리디렉션 처리
     if st.button("Google로 로그인"):
-        st.query_params(redirect=login_url)
-        st.rerun()
+        # 현재 페이지를 로그인 URL로 리디렉션
+        st.write(f'<meta http-equiv="refresh" content="0; url={login_url}">', unsafe_allow_html=True)
 
