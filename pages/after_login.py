@@ -63,4 +63,6 @@ supabase = create_client(url, key)
 #     st.write("로그인하지 않았습니다.")
 
 current_value = get_fragment()
+if current_value is None:
+    st.stop()
 st.write("Current value: {!r}".format(st.session_state.get('access_token', None)), key="unique_key_debug_output")
