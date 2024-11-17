@@ -1,5 +1,6 @@
 import os
 import streamlit as st
+from streamlit_url_fragment import get_fragment
 from supabase import create_client
 from dotenv import load_dotenv
 
@@ -60,3 +61,6 @@ if st.session_state['access_token']:
         st.write("로그인 세션이 만료되었습니다. 다시 로그인해주세요.")
 else:
     st.write("로그인하지 않았습니다.")
+
+current_value = get_fragment()
+st.write("Current value: {!r}".format(get_fragment()))
