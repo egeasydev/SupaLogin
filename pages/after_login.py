@@ -63,4 +63,4 @@ else:
     st.write("로그인하지 않았습니다.")
 
 current_value = get_fragment()
-st.write("Current value: {!r}".format(get_fragment()))
+st.write("Current value: {!r}".format(st.session_state.get('access_token', None)), key="unique_key_debug_output")
