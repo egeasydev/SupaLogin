@@ -68,5 +68,5 @@ if st.session_state['access_token']:
         st.write("사용자 정보를 가져오지 못했습니다.")
 else:
     # 로그인 버튼 표시
-    login_url = f"{url}/auth/v1/authorize?provider=google&redirect_to=https://supaenter.streamlit.app/"
+    login_url = f"{url}/auth/v1/authorize?provider=google&redirect_to=https://supaenter.streamlit.app/after_login"
     st.markdown(f"[Google로 로그인하기]({login_url})", unsafe_allow_html=True)
