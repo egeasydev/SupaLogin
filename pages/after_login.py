@@ -24,10 +24,9 @@ st.markdown("""
         const tokenMatch = hash.match(/access_token=([^&]+)/);
         if (tokenMatch) {
             const accessToken = tokenMatch[1];
-            const currentUrl = window.location.href.split('#')[0];
-            const newUrl = currentUrl + "?access_token=" + accessToken;
-            window.history.replaceState(null, null, newUrl);  // URL을 덮어쓰기
-            window.location.reload();  // 페이지 새로고침
+            const currentUrl = window.location.href.split('#')[0]; // # 이전 부분만 남김
+            const newUrl = currentUrl + "?access_token=" + accessToken; // 쿼리 파라미터 추가
+            window.location.replace(newUrl); // 페이지 리로드
         }
     }
     if (window.location.hash.includes("access_token")) {
