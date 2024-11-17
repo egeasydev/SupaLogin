@@ -37,7 +37,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 쿼리 파라미터에서 Access Token 추출
-query_params = st.query_params()
+query_params = st.query_params
 access_token = query_params.get('access_token')
 
 if access_token:
