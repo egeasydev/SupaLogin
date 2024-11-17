@@ -15,7 +15,7 @@ supabase = create_client(url, key)
 if 'access_token' not in st.session_state:
     st.session_state['access_token'] = None
 
-# JavaScript로 해시 프래그먼트에서 Access Token 추출 및 전달
+# JavaScript로 해시 프래그먼트에서 Access Token 추출 및 쿼리 파라미터로 변환
 st.markdown("""
 <script>
 (function() {
@@ -26,7 +26,8 @@ st.markdown("""
             const accessToken = tokenMatch[1];
             const currentUrl = window.location.href.split('#')[0];
             const newUrl = currentUrl + "?access_token=" + accessToken;
-            window.location.replace(newUrl); // URL 변경 및 페이지 새로고침
+            window.history.replaceState(null, null, newUrl);  // URL을 덮어쓰기
+            window.location.reload();  // 페이지 새로고침
         }
     }
     if (window.location.hash.includes("access_token")) {
@@ -37,7 +38,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 쿼리 파라미터에서 Access Token 추출
-query_params = st.query_params
+query_params = st.query_params()
 access_token = query_params.get('access_token')
 
 if access_token:
