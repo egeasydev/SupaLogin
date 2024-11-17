@@ -1,64 +1,62 @@
 import os
 import streamlit as st
-from supabase import create_client, Client
+from supabase import create_client
 from dotenv import load_dotenv
 
 # 환경 변수 로드
 load_dotenv()
 
 # Supabase 클라이언트 설정
-url = os.environ.get("SUPABASE_URL")
-key = os.environ.get("SUPABASE_KEY")
+url = os.getenv("SUPABASE_URL")
+key = os.getenv("SUPABASE_KEY")
 supabase = create_client(url, key)
 
+# 세션 상태 초기화
+if 'access_token' not in st.session_state:
+    st.session_state['access_token'] = None
 
+# JavaScript로 해시 프래그먼트에서 Access Token 추출 및 전달
 st.markdown("""
-    <script>
-    (function() {
-        function getAccessToken() {
-            const hash = window.location.hash;
-            const tokenMatch = hash.match(/access_token=([^&]+)/);
-            if (tokenMatch) {
-                const accessToken = tokenMatch[1];
-                // Streamlit에 전달
-                const streamlitEvent = new CustomEvent("accessToken", {detail: accessToken});
-                window.dispatchEvent(streamlitEvent);
-            }
+<script>
+(function() {
+    function extractToken() {
+        const hash = window.location.hash;
+        const tokenMatch = hash.match(/access_token=([^&]+)/);
+        if (tokenMatch) {
+            const accessToken = tokenMatch[1];
+            const currentUrl = window.location.href.split('#')[0];
+            const newUrl = currentUrl + "?access_token=" + accessToken;
+            window.location.replace(newUrl); // URL 변경 및 페이지 새로고침
         }
-        window.addEventListener("load", getAccessToken);
-    })();
-    </script>
+    }
+    if (window.location.hash.includes("access_token")) {
+        extractToken();
+    }
+})();
+</script>
 """, unsafe_allow_html=True)
 
-# JavaScript 이벤트 리스너 설정
-st.write("""
-    <script>
-    window.addEventListener("accessToken", (event) => {
-        const token = event.detail;
-        if (token) {
-            // Streamlit의 세션 상태에 access_token 저장
-            fetch('/?access_token=' + token)
-                .then(() => {
-                    // 페이지 다시 로드
-                    window.location.href = window.location.pathname;
-                });
-        }
-    });
-    </script>
-""", unsafe_allow_html=True)
-
-# 쿼리 파라미터에서 access_token 추출
-query_params = st.query_params
+# 쿼리 파라미터에서 Access Token 추출
+query_params = st.query_params()
 access_token = query_params.get('access_token')
 
 if access_token:
-    st.session_state['access_token'] = access_token[0]  # 리스트의 첫 번째 요소 선택
+    st.session_state['access_token'] = access_token[0]
 
-# 세션 상태에서 access_token 확인 및 사용자 정보 가져오기
+# Access Token이 세션에 저장되어 있으면 사용자 정보 가져오기
 if st.session_state['access_token']:
-    user_info = supabase.auth.get_user(st.session_state['access_token'])
-    if user_info:
-        st.write("로그인 상태입니다.")
-        st.write(f"사용자 정보: {user_info.user.email}")
-    else:
-        st.write("사용자 정보를 가져오지 못했습니다.")
+    try:
+        user_info = supabase.auth.get_user(st.session_state['access_token'])
+        if user_info:
+            st.write("로그인 상태입니다.")
+            st.write(f"사용자 정보: {user_info.user.email}")
+            if st.button("로그아웃"):
+                st.session_state['access_token'] = None
+                st.rerun()
+        else:
+            st.write("사용자 정보를 가져오지 못했습니다.")
+    except Exception as e:
+        st.session_state['access_token'] = None
+        st.write("로그인 세션이 만료되었습니다. 다시 로그인해주세요.")
+else:
+    st.write("로그인하지 않았습니다.")
